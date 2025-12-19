@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сервер ArbuzLand | Minecraft</title>
+    <style>
+        /* Основные стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a2915 0%, #1c6e3f 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            color: white;
+            padding: 20px;
+        }
+
+        /* Эффект частиц на фоне */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            top: 0;
+            left: 0;
+        }
+
+        /* Эффект мерцающих звезд */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        /* Анимированные блоки арбузов */
+        .watermelon-block {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b 0%, #ff4757 30%, #c44569 70%, #2d3436 100%);
+            border-radius: 50%;
+            border: 3px solid #2e8b57;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4), inset 0 0 25px rgba(255, 255, 255, 0.2);
+            animation: minecraft-float 8s infinite ease-in-out;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .watermelon-block::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 20%;
+            background: #2e8b57;
+            top: 0;
+            left: 0;
+            border-radius: 50% 50% 0 0;
+        }
+
+        .watermelon-block::after {
+            content: '';
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            top: 5%;
+            left: 5%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 20%),
+                repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 5px);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        /* Размещение блоков арбузов в разных позициях */
+        .watermelon-block:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+            animation-duration: 12s;
+        }
+
+        .watermelon-block:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 2s;
+            animation-duration: 14s;
+        }
+
+        .watermelon-block:nth-child(3) {
+            bottom: 15%;
+            left: 15%;
+            animation-delay: 4s;
+            animation-duration: 10s;
+        }
+
+        .watermelon-block:nth-child(4) {
+            bottom: 25%;
+            right: 5%;
+            animation-delay: 1s;
+            animation-duration: 16s;
+        }
+
+        .watermelon-block:nth-child(5) {
+            top: 30%;
+            left: 25%;
+            animation-delay: 3s;
+            animation-duration: 11s;
+        }
+
+        .watermelon-block:nth-child(6) {
+            bottom: 10%;
+            right: 20%;
+            animation-delay: 5s;
+            animation-duration: 13s;
+        }
+
+        .watermelon-block:nth-child(7) {
+            top: 40%;
+            right: 30%;
+            animation-delay: 1.5s;
+            animation-duration: 15s;
+        }
+
+        .watermelon-block:nth-child(8) {
+            bottom: 35%;
+            left: 30%;
+            animation-delay: 2.5s;
+            animation-duration: 9s;
+        }
+
+        /* Анимация блоков */
+        @keyframes minecraft-float {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0.7;
+            }
+            25% {
+                transform: translateY(-25px) rotate(5deg) scale(1.05);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0.7;
+            }
+            75% {
+                transform: translateY(25px) rotate(-5deg) scale(0.95);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Контейнер с затемнением фона для лучшей читаемости */
+        .container {
+            background-color: rgba(13, 59, 30, 0.85);
+            border: 4px solid #3bac61;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+        }
+
+        /* Эффекты текста */
+        h1 { 
+            color: #ff6347; 
+            font-size: 38px;
+            margin: 0 0 15px 0;
+            text-shadow: 2px 2px 0px #000;
+            position: relative;
+            animation: text-glowing 3s infinite alternate;
+        }
+
+        @keyframes text-glowing {
+            0% { text-shadow: 2px 2px 0px #000, 0 0 5px rgba(255, 99, 71, 0.5); }
+            100% { text-shadow: 2px 2px 0px #000, 0 0 20px rgba(255, 99, 71, 0.8), 0 0 30px rgba(255, 99, 71, 0.6); }
+        }
+
+        .description {
+            line-height: 1.6;
+            font-size: 16px;
+            color: #f0fff0;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .features {
+            background: rgba(59, 172, 97, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 2px dashed #3bac61;
+            font-weight: 500;
+            color: #f0fff0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .ip-block {
+            background: #222;
+            color: #ff6347;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ip-block::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 极简主义设计理念：1. 专注于核心内容：去除多余的装饰元素，让用户能专注于最重要的信息。2. 大量留白：运用留白创造呼吸空间，提升阅读舒适度。3. 有限色彩：通常使用1-3种颜色，创造视觉协调感。4. 简洁排版：使用清晰的排版层级和有限的字体样式。5. 功能优先：每个元素都有明确的目的，去除纯装饰性项目。%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,99,71,0.1), transparent, rgba(255,99,71,0.1));
+            animation: ip-pulse 2s infinite alternate;
+        }
+
+        @keyframes ip-pulse {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .ip-title { color: #aaa; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .ip-address { 
+            font-size: 28px; 
+            font-weight: bold; 
+            font-family: 'Consolas', monospace; 
+            text-shadow: 0 0 10px rgba(255, 99, 71, 0.7);
+            animation: ip-glow 2s infinite alternate;
+        }
+
+        @keyframes ip-glow {
+            0% { text-shadow: 0 0 10px rgba(255, 99, 71, 极简主义设计理念：1. 专注于核心内容：去除多余的装饰元素，让用户能专注于最重要的信息。2. 大量留白：运用留白创造呼吸空间，提升阅读舒适度。3. 有限色彩：通常使用1-3种颜色，创造视觉协调感。4. 简洁排版：使用清晰的排版层级和有限的字体样式。5. 功能优先：每个元素都有明确的目的，去除纯装饰性项目。.7); }
+            100% { text-shadow: 0 0 20px rgba(255, 99, 71, 0.9), 0 0 30px rgba(255, 99, 71, 0.5); }
+        }
+
+        .version {
+            color: #3bac61;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(59, 172, 97, 0.7);
+            animation: version-pulse 3s infinite alternate;
+        }
+
+        @keyframes version-pulse {
+            0% { text-shadow: 0 0 10px rgba(59, 172, 97, 0.7); }
+            100% { text-shadow: 0 0 15px rgba(59, 172, 97, 0.9), 0 0 20px rgba(59, 172, 97, 0.5); }
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 35px;
+            background-color: #24A1DE; 
+            color: white !important;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+            z-index: -1;
+        }
+
+        .btn:hover {
+            background-color: #1c82b3;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(36, 161, 222, 0.4);
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+        
+        /* Стили для нового раздела истории */
+        .history-section {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 3px solid #ff6347;
+        }
+        .history-title {
+            font-size: 28px;
+            color: #3bac61;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(59, 172, 97, 0.5);
+        }
+        .timeline-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 25px;
+            text-align: left;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .timeline-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 3px solid #ff6347;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .timeline-item img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 99, 71, 0.7);
+        }
+        .timeline-content {
+            flex: 1;
+        }
+        .timeline-date {
+            font-weight: bold;
+            color: #ff6347;
+            font-size: 1em;
+            display: block;
+            margin-bottom: 8px;
+            text-shadow: 0 0 8px rgba(255, 99, 71, 0.5);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(255, 154, 158, 0.3) 0%, rgba(250, 208, 196, 0.3) 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-style: italic;
+            border-left: 5px solid #ff6347;
+            color: #f0fff0;
+            position: relative;
+        }
+
+        .highlight::after {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 40px;
+            color: rgba(255, 99, 71, 0.3);
+            font-family: Georgia, serif;
+        }
+
+        /* Галерея для дополнительных изображений */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 25px;
+        }
+        
+        .gallery-item {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 3px solid #3bac61;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(59, 172, 97, 0.7);
+        }
+        
+        .gallery-title {
+            width: 100%;
+            text-align: center;
+            color: #3bac61;
+            font-size: 22px;
+            margin: 25px 0 15px 0;
+            text-shadow: 0 0 8px rgba(59, 172, 97, 0.5);
+        }
+
+        /* Стили для раздела команды */
+        .team-section {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 3px solid #24A1DE;
+        }
+        
+        .team-title {
+            font-size: 28px;
+            color: #24A1DE;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(36, 161, 222, 0.5);
+        }
+        
+        .team-member {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(248, 248, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #24A1DE, transparent);
+            opacity: 0.5;
+        }
+        
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid;
+            margin: 0 auto 15px auto;
+            transition: transform 0.3s;
+        }
+        
+        .team-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+        }
+        
+        .dmitry { border-color: #ff6347; }
+        .mikhail { border-color: #3bac61; }
+        .vlad { border-color: #9370DB; }
+        
+        .team-role {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .dmitry-text { color: #ff6347; text-shadow: 0 0 8px rgba(255, 99, 71, 0.5); }
+        .mikhail-text { color: #3bac61; text-shadow: 0 0 8px rgba(59, 172, 97, 0.5); }
+        .vlad-text { color: #9370DB; text-shadow: 0 0 8px rgba(147, 112, 219, 0.5); }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            display: block;
+            margin: auto;
+            max-width: 90%;
+            max-height: 80%;
+            margin-top: 5%;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(255,105,180,0.5);
+            animation: zoomIn 0.3s;
+        }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0.9); }
+            to { transform: scale(1); }
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .close:hover {
+            color: #ff6347;
+            text-shadow: 0 0 10px rgba(255, 99, 71, 0.8);
+        }
+        
+        .caption {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #ccc;
+            padding: 10px 0;
+            font-size: 16px;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (min-width: 768px) {
+            .timeline-item {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .timeline-item img {
+                width: 150px;
+                height: 100px;
+                margin-right: 20px;
+                margin-bottom: 0;
+            }
+            
+            .team-member {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .team-avatar {
+                margin: 0 20px 0 0;
+            }
+            
+            .team-role {
+                text-align: left;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Эффект частиц -->
+    <div id="particles-js"></div>
+    
+    <!-- Эффект звезд -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- Анимированные блоки арбузов -->
+    <div class="watermelon-block"></div>
+    <div class="watermelon-block"></div>
+    <div class="watermelon-block"></div>
+    <div class="watermelon-block"></div>
+    <div class="watermelon-block"></div>
+    <div class="watermelon-block"></div>
+    <div class="watermelon-block"></div>
+    <div class="watermelon-block"></div>
+
+    <div class="container">
+        <h1>🍉 ARBUZ LAND 🍉</h1>
+        
+        <div class="description">
+            Добро пожаловать на самый уютный и дружелюбный сервер Minecraft! У нас ты найдешь не просто выживание, а целый мир приключений, креатива и теплого общения. Присоединяйся к нашему растущему сообществу!
+        </div>
+
+        <div class="features">
+            🔊 Plasmo Voice • 🍺 Brewery • 🎵 Кастомные пластинки<br>
+            🛡️ Чуткая модерация и отзывчивая администрация!<br>
+            🏆 Регулярные ивенты и конкурсы с призами
+        </div>
+        
+        <div class="ip-block">
+            <div class="ip-title">Скопируй наш IP:</div>
+            <div class="ip-address">play.arbuzland.ru</div>
+        </div>
+        
+        <div class="version">Версия: 1.21 — 1.21.10</div>
+        
+        <a href="https://t.me/arbuz_land" target="_blank" class="btn">ВСТУПИТЬ В TELEGRAM</a>
+
+        <!-- НОВЫЙ РАЗДЕЛ: ИСТОРИЯ СЕРВЕРА -->
+        <div class="history-section">
+            <div class="history-title">Невероятная история ArbuzLand</div>
+
+            <div class="highlight">
+                "От маленькой идеи до большого сообщества — вот наша история. Каждый игрок оставил здесь свой след, и мы ждем именно тебя, чтобы написать следующую главу вместе!"
+            </div>
+
+            <div class="timeline-item">
+                <img src="aruzik.jpg" alt="Открытие сервера ArbuzLand" onerror="this.onerror=null; this.src='https://placehold.co/600x400/2e8b57/white?text=Открытие+сервера'" onclick="openModal(this)">
+                <div class="timeline-content">
+                    <span class="timeline-date">07.05.2025: Рождение легенды</span>
+                    В этот день сервер ArbuzLand впервые открыл свои порталы для игроков. Все начиналось с небольшой группы энтузиастов, которые верили, что можно создать особенное место в мире Minecraft. Первые домики, первые смешные смерти в лаве и первые совместные ночи, проведенные за стройкой — это было незабываемо!
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <img src="photo_2025-12-19_21-57-25.jpg" alt="Первый ивент Арбузный Бум" onerror="this.onerror=null; this.src='https://placehold.co/600x400/ff6347/white?text=Ивент+Арбузный+Бум'" onclick="openModal(this)">
+                <div class="timeline-content">
+                    <span class="timeline-date">24 Августа 2025: Арбузный Бум!</span>
+                    Наш первый масштабный ивент вошел в историю! Мы прятали сотни арбузов по всему миру, а игроки соревновались в их поисках. Призы, море смеха и невероятная атмосфера — именно после этого ивента наше сообщество начало стремительно расти. Кстати, некоторые арбузы до сих пор не найдены!
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <img src="photo_2025-12-19_21-57-08.jpg" alt="Установка плагинов" onerror="this.onerror=null; this.src='https://placehold.co/600x400/24A1DE/white?text=Плагины'" onclick="openModal(this)">
+                <div class="timeline-content">
+                    <span class="timeline-date">Август 2025: Технологический прорыв</span>
+                    Мы установили Plasmo Voice, и игра заиграла новыми красками! Теперь можно было слышать друзей не через дискорд, а прямо в игре — с эффектом эха в пещерах и затуханием звука на расстоянии. А с добавлением Brewery сервер наполнился ароматом свежесваренного пива и интересными механиками.
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <img src="onlain.jpg" alt="Рост сообщества" onerror="this.onerror=null; this.src='https://placehold.co/600x400/9370DB/white?text=Сообщество+растёт'" onclick="openModal(this)">
+                <div class="timeline-content">
+                    <span class="timeline-date">Сентябрь 2025: 50+ постоянных игроков</span>
+                    Наше сообщество перешагнуло отметку в 50 активных игроков! Мы стали настоящей семьей, где каждый знает друг друга, помогает новичкам и вместе создает невероятные проекты. От масштабных замков до красочных фестивалей — здесь каждый нашел себе дело по душе.
+                </div>
+            </div>
+            
+            <!-- Галерея дополнительных изображений -->
+            <div class="gallery-title">Захватывающие моменты с сервера</div>
+            <div class="gallery">
+                <img class="gallery-item" src="aruzi.png" alt="Скрины игроков" onerror="this.onerror=null; this.src='https://placehold.co/600x400/2e8b57/white?text=Постройки+игроков'" onclick="openModal(this)">
+                <img class="gallery-item" src="uru.png" alt="Декорации игроков" onerror="this.onerror=null; this.src='https://placehold.co/600x400/ff6347/white?text=Декорации'" onclick="openModal(this)">
+                <img class="gallery-item" src="ng.png" alt="Посиделки игроков" onerror="this.onerror=null; this.src='https://placehold.co/600x400/24A1DE/white?text=Посиделки'" onclick="openModal(this)">
+                <img class="gallery-item" src="2025-12-19_22.31.39.png" alt="Новые плагины" onerror="this.onerror=null; this.src='https://placehold.co/600x400/9370DB/white?text=Плагины'" onclick="openModal(this)">
+            </div>
+        </div>
+        
+        <!-- РАЗДЕЛ КОМАНДЫ -->
+        <div class="team-section">
+            <div class="team-title">Легендарная команда ArbuzLand</div>
+            
+            <div class="team-member">
+                <img class="team-avatar dmitry" src="dmitri.jpg" alt="Дмитрий - создатель сервера" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ff6347/white?text=Д'" onclick="openModal(this)">
+                <div class="team-content">
+                    <span class="team-role dmitry-text">Создатель сервера</span>
+                    Дмитрий — визионер и основатель ArbuzLand. Именно его мечта о идеальном Minecraft-сообществе стала реальностью. Дмитрий всегда в поиске новых идей для сервера, обожает общаться с игроками и лично участвует в разработке уникальных механик. Его девиз: "Каждый игрок должен чувствовать себя как дома!"
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <img class="team-avatar mikhail" src="Mi.jpg" alt="Михаил - администратор" onerror="this.onerror=null; this.src='https://placehold.co/100x100/2e8b57/white?text=М'" onclick="openModal(this)">
+                <div class="team-content">
+                    <span class="team-role mikhail-text">Главный администратор</span>
+                    Михаил — столп порядка и справедливости на сервере. Он не только следит за соблюдением правил, но и создает невероятные ивенты, от которых захватывает дух. С его легкой руки на сервере прошли легендарные "Арбузные гонки" и "Ночь охоты на сокровища". Игроки ценят его за честность и готовность всегда помочь.
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <img class="team-avatar vlad" src="vlad.jpg" alt="Влад - администратор" onerror="this.onerror=null; this.src='https://placehold.co/100x100/9370DB/white?text=В'" onclick="openModal(this)">
+                <div class="team-content">
+                    <span class="team-role vlad-text">Администратор и креативный директор</span>
+                    Влад — душа нашего сервера и мастер декора. Благодаря ему ArbuzLand такой красочный и уютный. Он организует строительные конкурсы, помогает новичкам освоиться и придумывает самые невероятные оформления для ивентов. Его постройки — это настоящие произведения искусства!
+                </div>
+            </div>
+        </div>
+
+    </div> 
+    
+    <!-- Модальное окно для просмотра изображений -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="caption" class="caption"></div>
+    </div>
+
+    <!-- Подключаем библиотеку частиц -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <script>
+        // Инициализация частиц
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#2e8b57" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#3bac61",
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" },
+                        resize: true
+                    }
+                }
+            });
+        });
+
+        // Создание звезд
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                star.style.animationDuration = `${2 + Math.random() * 3}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Функция для открытия модального окна с изображением
+        function openModal(img) {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("modalImage");
+            const captionText = document.getElementById("caption");
+            
+            modal.style.display = "block";
+            modalImg.src = img.src;
+            captionText.innerHTML = img.alt;
+            
+            // Добавляем обработчик для закрытия по клику вне изображения
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            };
+            
+            // Добавляем обработчик для закрытия по клавише Escape
+            document.addEventListener('keydown', function(event) {
+                if (event.key === "Escape") {
+                    closeModal();
+                }
+            });
+        }
+
+        // Функция для закрытия модального окна
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+        
+        // Автоматическая замена битых изображений
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                // Проверяем, загрузилось ли изображение
+                if (img.complete && img.naturalHeight === 0) {
+                    const altText = img.alt || 'Изображение';
+                    const color = img.classList.contains('gallery-item') ? '9370DB' : '2e8b57';
+                    img.src = `https://placehold.co/${img.width}x${img.height}/${color}/white?text=${encodeURIComponent(altText)}`;
+                }
+                
+                // Добавляем обработчик на случай ошибки загрузки
+                img.onerror = function() {
+                    const altText = this.alt || 'Изображение';
+                    const color = this.classList.contains('gallery-item') ? '9370DB' : '2e8b57';
+                    this.src = `https://placehold.co/${this.width}x${this.height}/${color}/white?text=${encodeURIComponent(altText)}`;
+                };
+            });
+        });
+    </script>
+
+</body>
+</html>
